@@ -9,7 +9,7 @@ const Book = require('../models/Book');
 async function seed() {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
-    throw new Error('MONGODB_URI is not set');
+    throw new Error('MONGODB_URI is not set (use MongoDB Atlas or local MongoDB)');
   }
 
   await mongoose.connect(uri);

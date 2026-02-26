@@ -1,6 +1,6 @@
 const express = require('express');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const ConnectMongo = require('connect-mongo');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -33,6 +33,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 const sessionSecret = process.env.SESSION_SECRET || 'dev_secret_change_me';
+const mongoUrl = process.env.MONGODB_URI;
 
 app.use(
   session({
@@ -45,9 +46,13 @@ app.use(
       sameSite: 'lax',
       maxAge: 1000 * 60 * 60 * 24 * 7,
     },
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
-    }),
+    ...(mongoUrl
+      ? {
+          store: (ConnectMongo.create
+            ? ConnectMongo.create({ mongoUrl })
+            : ConnectMongo.default.create({ mongoUrl })),
+        }
+      : {}),
   })
 );
 
@@ -60,7 +65,10 @@ const aiLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => (req.user ? req.user.id : req.ip),
+  keyGenerator: (req, res) => {
+    if (req.user && req.user.id) return `user:${req.user.id}`;
+    return rateLimit.ipKeyGenerator(req, res);
+  },
 });
 
 app.use('/api/auth', authRoutes);

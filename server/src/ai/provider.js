@@ -1,11 +1,13 @@
-const fetch = require('node-fetch');
-
 async function generateText({ prompt }) {
   const provider = (process.env.AI_PROVIDER || 'openai').toLowerCase();
   const model = process.env.AI_MODEL || 'gpt-4.1-mini';
 
   if (!prompt || typeof prompt !== 'string') {
     throw new Error('Prompt is required');
+  }
+
+  if (typeof fetch !== 'function') {
+    throw new Error('Global fetch is not available. Use Node.js 18+.');
   }
 
   const maxLength = 2000;

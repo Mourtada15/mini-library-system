@@ -1,5 +1,5 @@
 const request = require('supertest');
-const mongoose = require('mongoose');
+process.env.NODE_ENV = 'test';
 
 jest.mock('../ai/provider', () => ({
   generateText: jest.fn(async ({ prompt }) => ({
@@ -19,32 +19,42 @@ jest.mock('../ai/provider', () => ({
   })),
 }));
 
-const app = require('../server');
+jest.mock('../models/AiLog', () => ({
+  create: jest.fn(async () => ({})),
+}));
+
+let mockBooks;
+
+jest.mock('../models/Book', () => {
+  const chain = (result) => ({
+    limit: async () => result,
+  });
+
+  return {
+    deleteMany: jest.fn(async () => ({})),
+    create: jest.fn(async (doc) => {
+      const created = { _id: String(Date.now()), status: 'AVAILABLE', ...doc };
+      mockBooks.push(created);
+      return created;
+    }),
+    find: jest.fn(() => chain(mockBooks)),
+  };
+});
+
 const Book = require('../models/Book');
 
 describe('AI routes', () => {
   beforeAll(async () => {
-    process.env.NODE_ENV = 'test';
-    process.env.MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/mini-library-test-ai';
-    await mongoose.connect(process.env.MONGODB_URI);
-  });
-
-  afterAll(async () => {
-    await mongoose.connection.db.dropDatabase();
-    await mongoose.disconnect();
+    // eslint-disable-next-line global-require
+    global.__app = require('../server');
   });
 
   beforeEach(async () => {
-    await Book.deleteMany({});
-    await Book.create({
-      title: 'Test AI Book',
-      author: 'AI Author',
-      status: 'AVAILABLE',
-    });
+    mockBooks = [{ _id: 'b1', title: 'Test AI Book', author: 'AI Author', status: 'AVAILABLE' }];
   });
 
   test('POST /api/ai/smart-search returns books and explanation', async () => {
-    const res = await request(app)
+    const res = await request(global.__app)
       .post('/api/ai/smart-search')
       .set('x-test-user-role', 'MEMBER')
       .send({ query: 'find test book' });
