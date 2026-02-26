@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, Button, Card, Col, Form, Row, Spinner } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
-import api from '../api/client';
+import React, { useEffect, useState } from "react";
+import { Alert, Button, Card, Col, Form, Row, Spinner } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../api/client";
 
 function normalizeTags(str) {
   return str
-    .split(',')
+    .split(",")
     .map((t) => t.trim())
     .filter(Boolean);
 }
@@ -19,13 +19,13 @@ export default function BookFormPage() {
   const [error, setError] = useState(null);
 
   const [form, setForm] = useState({
-    title: '',
-    author: '',
-    isbn: '',
-    description: '',
-    genre: '',
-    tags: '',
-    year: '',
+    title: "",
+    author: "",
+    isbn: "",
+    description: "",
+    genre: "",
+    tags: "",
+    year: "",
   });
 
   useEffect(() => {
@@ -37,13 +37,13 @@ export default function BookFormPage() {
         const res = await api.get(`/api/books/${id}`);
         const b = res.data;
         setForm({
-          title: b.title || '',
-          author: b.author || '',
-          isbn: b.isbn || '',
-          description: b.description || '',
-          genre: b.genre || '',
-          tags: b.tags?.length ? b.tags.join(', ') : '',
-          year: b.year ? String(b.year) : '',
+          title: b.title || "",
+          author: b.author || "",
+          isbn: b.isbn || "",
+          description: b.description || "",
+          genre: b.genre || "",
+          tags: b.tags?.length ? b.tags.join(", ") : "",
+          year: b.year ? String(b.year) : "",
         });
       } catch (e) {
         setError(e?.response?.data?.message || e.message);
@@ -76,7 +76,7 @@ export default function BookFormPage() {
         await api.put(`/api/books/${id}`, payload);
         navigate(`/books/${id}`);
       } else {
-        const res = await api.post('/api/books', payload);
+        const res = await api.post("/api/books", payload);
         navigate(`/books/${res.data._id}`);
       }
     } catch (e2) {
@@ -89,7 +89,7 @@ export default function BookFormPage() {
   return (
     <Card>
       <Card.Body>
-        <Card.Title>{isEdit ? 'Edit Book' : 'Add Book'}</Card.Title>
+        <Card.Title>{isEdit ? "Edit Book" : "Add Book"}</Card.Title>
         {error ? <Alert variant="danger">{error}</Alert> : null}
 
         <Form onSubmit={onSubmit}>
@@ -119,25 +119,41 @@ export default function BookFormPage() {
             <Col md={6}>
               <Form.Group>
                 <Form.Label>ISBN</Form.Label>
-                <Form.Control name="isbn" value={form.isbn} onChange={onChange} />
+                <Form.Control
+                  name="isbn"
+                  value={form.isbn}
+                  onChange={onChange}
+                />
               </Form.Group>
             </Col>
             <Col md={6}>
               <Form.Group>
                 <Form.Label>Year</Form.Label>
-                <Form.Control name="year" value={form.year} onChange={onChange} />
+                <Form.Control
+                  name="year"
+                  value={form.year}
+                  onChange={onChange}
+                />
               </Form.Group>
             </Col>
             <Col md={6}>
               <Form.Group>
                 <Form.Label>Genre</Form.Label>
-                <Form.Control name="genre" value={form.genre} onChange={onChange} />
+                <Form.Control
+                  name="genre"
+                  value={form.genre}
+                  onChange={onChange}
+                />
               </Form.Group>
             </Col>
             <Col md={6}>
               <Form.Group>
                 <Form.Label>Tags (comma separated)</Form.Label>
-                <Form.Control name="tags" value={form.tags} onChange={onChange} />
+                <Form.Control
+                  name="tags"
+                  value={form.tags}
+                  onChange={onChange}
+                />
               </Form.Group>
             </Col>
             <Col md={12}>
@@ -154,9 +170,13 @@ export default function BookFormPage() {
             </Col>
             <Col md={12} className="d-flex gap-2">
               <Button type="submit" disabled={loading}>
-                {loading ? <Spinner size="sm" animation="border" /> : 'Save'}
+                {loading ? <Spinner size="sm" animation="border" /> : "Save"}
               </Button>
-              <Button variant="secondary" onClick={() => navigate(-1)} disabled={loading}>
+              <Button
+                variant="secondary"
+                onClick={() => navigate(-1)}
+                disabled={loading}
+              >
                 Cancel
               </Button>
             </Col>
@@ -166,4 +186,3 @@ export default function BookFormPage() {
     </Card>
   );
 }
-

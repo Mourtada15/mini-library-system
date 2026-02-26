@@ -1,7 +1,7 @@
-import React from 'react';
-import { Container, Nav, Navbar, Button, Image } from 'react-bootstrap';
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import React from "react";
+import { Container, Nav, Navbar, Button, Image } from "react-bootstrap";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -9,7 +9,7 @@ export default function Layout() {
 
   const onLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -28,7 +28,7 @@ export default function Layout() {
               <Nav.Link as={NavLink} to="/ai">
                 AI Assistant
               </Nav.Link>
-              {user?.role === 'ADMIN' ? (
+              {user?.role === "ADMIN" ? (
                 <Nav.Link as={NavLink} to="/admin/users">
                   Admin
                 </Nav.Link>
@@ -64,4 +64,3 @@ export default function Layout() {
     </>
   );
 }
-

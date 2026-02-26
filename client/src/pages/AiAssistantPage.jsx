@@ -1,20 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, Button, Card, Col, Form, Row, Spinner, Table } from 'react-bootstrap';
-import api from '../api/client';
-import { useAuth } from '../context/AuthContext';
+import React, { useEffect, useState } from "react";
+import {
+  Alert,
+  Button,
+  Card,
+  Col,
+  Form,
+  Row,
+  Spinner,
+  Table,
+} from "react-bootstrap";
+import api from "../api/client";
+import { useAuth } from "../context/AuthContext";
 
 export default function AiAssistantPage() {
   const { user } = useAuth();
-  const canEnrich = user && (user.role === 'ADMIN' || user.role === 'LIBRARIAN');
+  const canEnrich =
+    user && (user.role === "ADMIN" || user.role === "LIBRARIAN");
 
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [smartLoading, setSmartLoading] = useState(false);
   const [smartError, setSmartError] = useState(null);
-  const [smartExplanation, setSmartExplanation] = useState('');
+  const [smartExplanation, setSmartExplanation] = useState("");
   const [smartBooks, setSmartBooks] = useState([]);
 
   const [books, setBooks] = useState([]);
-  const [bookId, setBookId] = useState('');
+  const [bookId, setBookId] = useState("");
   const [enrichLoading, setEnrichLoading] = useState(false);
   const [enrichError, setEnrichError] = useState(null);
   const [enriched, setEnriched] = useState(null);
@@ -23,11 +33,11 @@ export default function AiAssistantPage() {
     setSmartLoading(true);
     setSmartError(null);
     setSmartBooks([]);
-    setSmartExplanation('');
+    setSmartExplanation("");
     try {
-      const res = await api.post('/api/ai/smart-search', { query });
+      const res = await api.post("/api/ai/smart-search", { query });
       setSmartBooks(res.data.books || []);
-      setSmartExplanation(res.data.explanation || '');
+      setSmartExplanation(res.data.explanation || "");
     } catch (e) {
       setSmartError(e?.response?.data?.message || e.message);
     } finally {
@@ -37,9 +47,12 @@ export default function AiAssistantPage() {
 
   const loadBooks = async () => {
     try {
-      const res = await api.get('/api/books', { params: { page: 1, limit: 50, sort: 'createdAt', order: 'desc' } });
+      const res = await api.get("/api/books", {
+        params: { page: 1, limit: 50, sort: "createdAt", order: "desc" },
+      });
       setBooks(res.data.data || []);
-      if (!bookId && res.data.data && res.data.data[0]) setBookId(res.data.data[0]._id);
+      if (!bookId && res.data.data && res.data.data[0])
+        setBookId(res.data.data[0]._id);
     } catch {
       // ignore
     }
@@ -55,7 +68,7 @@ export default function AiAssistantPage() {
     setEnrichError(null);
     setEnriched(null);
     try {
-      const res = await api.post('/api/ai/enrich-book', { bookId });
+      const res = await api.post("/api/ai/enrich-book", { bookId });
       setEnriched(res.data);
       await loadBooks();
     } catch (e) {
@@ -81,10 +94,21 @@ export default function AiAssistantPage() {
                 placeholder='e.g. "Available sci-fi books from the 1960s about desert planets"'
               />
             </Form.Group>
-            <Button onClick={runSmartSearch} disabled={smartLoading || !query.trim()}>
-              {smartLoading ? <Spinner size="sm" animation="border" /> : 'Smart search'}
+            <Button
+              onClick={runSmartSearch}
+              disabled={smartLoading || !query.trim()}
+            >
+              {smartLoading ? (
+                <Spinner size="sm" animation="border" />
+              ) : (
+                "Smart search"
+              )}
             </Button>
-            {smartError ? <Alert variant="danger" className="mt-3">{smartError}</Alert> : null}
+            {smartError ? (
+              <Alert variant="danger" className="mt-3">
+                {smartError}
+              </Alert>
+            ) : null}
             {smartExplanation ? (
               <Alert variant="info" className="mt-3">
                 {smartExplanation}
@@ -122,7 +146,10 @@ export default function AiAssistantPage() {
               <>
                 <Form.Group className="mb-2">
                   <Form.Label>Select a book</Form.Label>
-                  <Form.Select value={bookId} onChange={(e) => setBookId(e.target.value)}>
+                  <Form.Select
+                    value={bookId}
+                    onChange={(e) => setBookId(e.target.value)}
+                  >
                     {books.map((b) => (
                       <option key={b._id} value={b._id}>
                         {b.title} — {b.author}
@@ -130,17 +157,35 @@ export default function AiAssistantPage() {
                     ))}
                   </Form.Select>
                 </Form.Group>
-                <Button onClick={enrichBook} disabled={enrichLoading || !bookId}>
-                  {enrichLoading ? <Spinner size="sm" animation="border" /> : 'Generate tags/genre/summary'}
+                <Button
+                  onClick={enrichBook}
+                  disabled={enrichLoading || !bookId}
+                >
+                  {enrichLoading ? (
+                    <Spinner size="sm" animation="border" />
+                  ) : (
+                    "Generate tags/genre/summary"
+                  )}
                 </Button>
-                {enrichError ? <Alert variant="danger" className="mt-3">{enrichError}</Alert> : null}
+                {enrichError ? (
+                  <Alert variant="danger" className="mt-3">
+                    {enrichError}
+                  </Alert>
+                ) : null}
                 {enriched ? (
                   <Alert variant="success" className="mt-3">
                     Updated: <strong>{enriched.title}</strong>
                     <div className="mt-2">
-                      <div><strong>Genre:</strong> {enriched.genre || '-'}</div>
-                      <div><strong>Tags:</strong> {enriched.tags?.length ? enriched.tags.join(', ') : '-'}</div>
-                      <div className="mt-2"><strong>Summary:</strong> {enriched.aiSummary || '-'}</div>
+                      <div>
+                        <strong>Genre:</strong> {enriched.genre || "-"}
+                      </div>
+                      <div>
+                        <strong>Tags:</strong>{" "}
+                        {enriched.tags?.length ? enriched.tags.join(", ") : "-"}
+                      </div>
+                      <div className="mt-2">
+                        <strong>Summary:</strong> {enriched.aiSummary || "-"}
+                      </div>
                     </div>
                   </Alert>
                 ) : null}
@@ -156,4 +201,3 @@ export default function AiAssistantPage() {
     </Row>
   );
 }
-

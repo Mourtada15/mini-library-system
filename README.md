@@ -21,6 +21,12 @@
 
 ### Local setup
 
+Node.js requirement: `^20.19.0 || ^22.13.0 || >=24.0.0` (project default in `.nvmrc` is `20.19.0`).
+
+```bash
+nvm use
+```
+
 1) Install dependencies:
 
 ```bash
@@ -69,12 +75,14 @@ For production, add your deployed URLs and update:
 
 Set in `server/.env`:
 
-- `AI_PROVIDER=openai` or `AI_PROVIDER=anthropic`
+- `AI_PROVIDER=mock` (default) or `AI_PROVIDER=openai` / `AI_PROVIDER=anthropic`
 - `AI_MODEL=...`
 - `OPENAI_API_KEY=...` (if OpenAI)
 - `ANTHROPIC_API_KEY=...` (if Anthropic)
 
 AI endpoints are rate-limited (10 requests/min per user).
+
+Mock mode is enabled by default so AI endpoints work without real keys; switch to OpenAI or Anthropic by changing `AI_PROVIDER` and setting the corresponding API key env vars.
 
 ### Deployment (suggested)
 
@@ -88,5 +96,4 @@ AI endpoints are rate-limited (10 requests/min per user).
 ### Notes
 
 - The client uses cookies (`withCredentials: true`) to maintain the session.
-- Tests do not require real OAuth or AI keys; they use a test-role header injection and a mocked AI provider.
-
+- Tests do not require real OAuth or AI keys; they use a test-role header injection and the mock AI provider.

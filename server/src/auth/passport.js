@@ -9,7 +9,7 @@ function configurePassport(passport) {
   } = process.env;
 
   if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !GOOGLE_CALLBACK_URL) {
-    // eslint-disable-next-line no-console
+     
     console.warn('Google OAuth env vars are not fully set. Auth will not work properly.');
   }
 

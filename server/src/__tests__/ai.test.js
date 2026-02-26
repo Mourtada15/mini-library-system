@@ -1,23 +1,6 @@
 const request = require('supertest');
 process.env.NODE_ENV = 'test';
-
-jest.mock('../ai/provider', () => ({
-  generateText: jest.fn(async ({ prompt }) => ({
-    text:
-      prompt.indexOf('filters') !== -1
-        ? JSON.stringify({
-            filters: { title: 'Test', author: null, isbn: null, genre: null, tags: null, year: null, availability: null },
-            explanation: 'Matched test books',
-          })
-        : JSON.stringify({
-            tags: ['tag1', 'tag2'],
-            genre: 'Fiction',
-            summary: 'Summary text',
-          }),
-    provider: 'mock',
-    model: 'mock-model',
-  })),
-}));
+process.env.AI_PROVIDER = 'mock';
 
 jest.mock('../models/AiLog', () => ({
   create: jest.fn(async () => ({})),
@@ -45,7 +28,7 @@ const Book = require('../models/Book');
 
 describe('AI routes', () => {
   beforeAll(async () => {
-    // eslint-disable-next-line global-require
+     
     global.__app = require('../server');
   });
 

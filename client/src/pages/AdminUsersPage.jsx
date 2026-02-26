@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, Form, Spinner, Table } from 'react-bootstrap';
-import api from '../api/client';
+import React, { useEffect, useState } from "react";
+import { Alert, Form, Spinner, Table } from "react-bootstrap";
+import api from "../api/client";
 
 export default function AdminUsersPage() {
   const [loading, setLoading] = useState(false);
@@ -12,7 +12,7 @@ export default function AdminUsersPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.get('/api/users', { params: { page: 1, limit } });
+      const res = await api.get("/api/users", { params: { page: 1, limit } });
       setUsers(res.data.data || []);
     } catch (e) {
       setError(e?.response?.data?.message || e.message);
@@ -77,4 +77,3 @@ export default function AdminUsersPage() {
     </>
   );
 }
-

@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, Badge, Button, Card, Row, Col, Spinner } from 'react-bootstrap';
-import { Link, useParams } from 'react-router-dom';
-import api from '../api/client';
-import { useAuth } from '../context/AuthContext';
+import React, { useEffect, useState } from "react";
+import { Alert, Badge, Button, Card, Row, Col, Spinner } from "react-bootstrap";
+import { Link, useParams } from "react-router-dom";
+import api from "../api/client";
+import { useAuth } from "../context/AuthContext";
 
 function StatusBadge({ status }) {
-  const variant = status === 'AVAILABLE' ? 'success' : 'secondary';
+  const variant = status === "AVAILABLE" ? "success" : "secondary";
   return <Badge bg={variant}>{status}</Badge>;
 }
 
 export default function BookDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
-  const canManageBooks = user && (user.role === 'ADMIN' || user.role === 'LIBRARIAN');
+  const canManageBooks =
+    user && (user.role === "ADMIN" || user.role === "LIBRARIAN");
 
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -43,7 +44,7 @@ export default function BookDetailPage() {
     try {
       const res = await api.post(`/api/books/${id}/checkout`, {});
       setBook(res.data);
-      setSuccess('Checked out.');
+      setSuccess("Checked out.");
     } catch (e) {
       setError(e?.response?.data?.message || e.message);
     }
@@ -55,7 +56,7 @@ export default function BookDetailPage() {
     try {
       const res = await api.post(`/api/books/${id}/checkin`);
       setBook(res.data);
-      setSuccess('Checked in.');
+      setSuccess("Checked in.");
     } catch (e) {
       setError(e?.response?.data?.message || e.message);
     }
@@ -65,9 +66,9 @@ export default function BookDetailPage() {
     setError(null);
     setSuccess(null);
     try {
-      const res = await api.post('/api/ai/enrich-book', { bookId: id });
+      const res = await api.post("/api/ai/enrich-book", { bookId: id });
       setBook(res.data);
-      setSuccess('AI enrichment completed.');
+      setSuccess("AI enrichment completed.");
     } catch (e) {
       setError(e?.response?.data?.message || e.message);
     }
@@ -96,7 +97,11 @@ export default function BookDetailPage() {
         </Col>
         <Col className="text-end">
           {canManageBooks ? (
-            <Button as={Link} to={`/books/${id}/edit`} variant="outline-secondary">
+            <Button
+              as={Link}
+              to={`/books/${id}/edit`}
+              variant="outline-secondary"
+            >
               Edit
             </Button>
           ) : null}
@@ -113,38 +118,38 @@ export default function BookDetailPage() {
                 <strong>Status:</strong> <StatusBadge status={book.status} />
               </div>
               <div className="mb-2">
-                <strong>Genre:</strong> {book.genre || '-'}
+                <strong>Genre:</strong> {book.genre || "-"}
               </div>
               <div className="mb-2">
-                <strong>Year:</strong> {book.year || '-'}
+                <strong>Year:</strong> {book.year || "-"}
               </div>
               <div className="mb-2">
-                <strong>ISBN:</strong> {book.isbn || '-'}
+                <strong>ISBN:</strong> {book.isbn || "-"}
               </div>
               <div className="mb-2">
-                <strong>Tags:</strong> {book.tags?.length ? book.tags.join(', ') : '-'}
+                <strong>Tags:</strong>{" "}
+                {book.tags?.length ? book.tags.join(", ") : "-"}
               </div>
               <div className="mb-2">
                 <strong>Description:</strong>
-                <div className="text-muted">{book.description || '-'}</div>
+                <div className="text-muted">{book.description || "-"}</div>
               </div>
             </Col>
             <Col md={4}>
               <Card className="bg-light">
                 <Card.Body>
                   <div className="mb-2">
-                    <strong>Borrower:</strong>{' '}
-                    {book.borrowedBy?.name || '-'}
+                    <strong>Borrower:</strong> {book.borrowedBy?.name || "-"}
                   </div>
                   <div className="mb-2">
-                    <strong>Due:</strong>{' '}
-                    {book.dueAt ? new Date(book.dueAt).toLocaleString() : '-'}
+                    <strong>Due:</strong>{" "}
+                    {book.dueAt ? new Date(book.dueAt).toLocaleString() : "-"}
                   </div>
                   <div className="d-grid gap-2">
-                    {book.status === 'AVAILABLE' ? (
+                    {book.status === "AVAILABLE" ? (
                       <Button onClick={checkout}>Checkout</Button>
                     ) : null}
-                    {book.status === 'BORROWED' && canManageBooks ? (
+                    {book.status === "BORROWED" && canManageBooks ? (
                       <Button variant="success" onClick={checkin}>
                         Checkin
                       </Button>
@@ -165,10 +170,11 @@ export default function BookDetailPage() {
       <Card>
         <Card.Body>
           <Card.Title>AI Summary</Card.Title>
-          <div className="text-muted">{book.aiSummary || 'No AI summary yet.'}</div>
+          <div className="text-muted">
+            {book.aiSummary || "No AI summary yet."}
+          </div>
         </Card.Body>
       </Card>
     </>
   );
 }
-

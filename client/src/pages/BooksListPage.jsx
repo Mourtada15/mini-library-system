@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Badge,
@@ -10,24 +10,24 @@ import {
   Col,
   Spinner,
   Table,
-} from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import api from '../api/client';
-import { useAuth } from '../context/AuthContext';
+} from "react-bootstrap";
+import { Link } from "react-router-dom";
+import api from "../api/client";
+import { useAuth } from "../context/AuthContext";
 
 function StatusBadge({ status }) {
-  const variant = status === 'AVAILABLE' ? 'success' : 'secondary';
+  const variant = status === "AVAILABLE" ? "success" : "secondary";
   return <Badge bg={variant}>{status}</Badge>;
 }
 
 export default function BooksListPage() {
   const { user } = useAuth();
-  const [q, setQ] = useState('');
-  const [availability, setAvailability] = useState('ALL');
-  const [genre, setGenre] = useState('');
-  const [year, setYear] = useState('');
-  const [sort, setSort] = useState('createdAt');
-  const [order, setOrder] = useState('desc');
+  const [q, setQ] = useState("");
+  const [availability, setAvailability] = useState("ALL");
+  const [genre, setGenre] = useState("");
+  const [year, setYear] = useState("");
+  const [sort, setSort] = useState("createdAt");
+  const [order, setOrder] = useState("desc");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
@@ -38,26 +38,31 @@ export default function BooksListPage() {
   const [total, setTotal] = useState(0);
 
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const canManageBooks = user && (user.role === 'ADMIN' || user.role === 'LIBRARIAN');
-  const isAdmin = user && user.role === 'ADMIN';
+  const canManageBooks =
+    user && (user.role === "ADMIN" || user.role === "LIBRARIAN");
+  const isAdmin = user && user.role === "ADMIN";
 
-  const totalPages = useMemo(() => Math.max(1, Math.ceil(total / limit)), [total, limit]);
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(total / limit)),
+    [total, limit],
+  );
 
-  const fetchBooks = async () => {
+  const fetchBooks = async (overrides = {}) => {
     setLoading(true);
     setError(null);
     try {
+      const nextPage = overrides.page ?? page;
       const params = {
-        q: q || undefined,
-        availability: availability !== 'ALL' ? availability : undefined,
+        q: q.trim() || undefined,
+        availability: availability !== "ALL" ? availability : undefined,
         genre: genre || undefined,
         year: year || undefined,
-        page,
+        page: nextPage,
         limit,
         sort,
         order,
       };
-      const res = await api.get('/api/books', { params });
+      const res = await api.get("/api/books", { params });
       setData(res.data.data);
       setTotal(res.data.total);
     } catch (e) {
@@ -74,8 +79,11 @@ export default function BooksListPage() {
 
   const onSearch = async (e) => {
     e.preventDefault();
-    setPage(1);
-    await fetchBooks();
+    if (page !== 1) {
+      setPage(1);
+      return;
+    }
+    await fetchBooks({ page: 1 });
   };
 
   const checkout = async (bookId) => {
@@ -83,7 +91,7 @@ export default function BooksListPage() {
     setSuccess(null);
     try {
       await api.post(`/api/books/${bookId}/checkout`, {});
-      setSuccess('Checked out successfully.');
+      setSuccess("Checked out successfully.");
       await fetchBooks();
     } catch (e) {
       setError(e?.response?.data?.message || e.message);
@@ -95,7 +103,7 @@ export default function BooksListPage() {
     setSuccess(null);
     try {
       await api.post(`/api/books/${bookId}/checkin`);
-      setSuccess('Checked in successfully.');
+      setSuccess("Checked in successfully.");
       await fetchBooks();
     } catch (e) {
       setError(e?.response?.data?.message || e.message);
@@ -108,7 +116,7 @@ export default function BooksListPage() {
     setSuccess(null);
     try {
       await api.delete(`/api/books/${deleteTarget._id}`);
-      setSuccess('Book deleted.');
+      setSuccess("Book deleted.");
       setDeleteTarget(null);
       await fetchBooks();
     } catch (e) {
@@ -175,13 +183,19 @@ export default function BooksListPage() {
           <Col md={2}>
             <Row className="g-2">
               <Col>
-                <Form.Select value={sort} onChange={(e) => setSort(e.target.value)}>
+                <Form.Select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                >
                   <option value="createdAt">Created</option>
                   <option value="title">Title</option>
                 </Form.Select>
               </Col>
               <Col>
-                <Form.Select value={order} onChange={(e) => setOrder(e.target.value)}>
+                <Form.Select
+                  value={order}
+                  onChange={(e) => setOrder(e.target.value)}
+                >
                   <option value="desc">Desc</option>
                   <option value="asc">Asc</option>
                 </Form.Select>
@@ -212,17 +226,27 @@ export default function BooksListPage() {
               <tr key={b._id}>
                 <td>{b.title}</td>
                 <td>{b.author}</td>
-                <td>{b.genre || '-'}</td>
-                <td>{b.year || '-'}</td>
+                <td>{b.genre || "-"}</td>
+                <td>{b.year || "-"}</td>
                 <td>
                   <StatusBadge status={b.status} />
                 </td>
                 <td className="d-flex gap-2 flex-wrap">
-                  <Button as={Link} to={`/books/${b._id}`} size="sm" variant="outline-primary">
+                  <Button
+                    as={Link}
+                    to={`/books/${b._id}`}
+                    size="sm"
+                    variant="outline-primary"
+                  >
                     View
                   </Button>
                   {canManageBooks ? (
-                    <Button as={Link} to={`/books/${b._id}/edit`} size="sm" variant="outline-secondary">
+                    <Button
+                      as={Link}
+                      to={`/books/${b._id}/edit`}
+                      size="sm"
+                      variant="outline-secondary"
+                    >
                       Edit
                     </Button>
                   ) : null}
@@ -236,14 +260,18 @@ export default function BooksListPage() {
                     </Button>
                   ) : null}
 
-                  {b.status === 'AVAILABLE' ? (
+                  {b.status === "AVAILABLE" ? (
                     <Button size="sm" onClick={() => checkout(b._id)}>
                       Checkout
                     </Button>
                   ) : null}
 
-                  {b.status === 'BORROWED' && canManageBooks ? (
-                    <Button size="sm" variant="success" onClick={() => checkin(b._id)}>
+                  {b.status === "BORROWED" && canManageBooks ? (
+                    <Button
+                      size="sm"
+                      variant="success"
+                      onClick={() => checkin(b._id)}
+                    >
                       Checkin
                     </Button>
                   ) : null}
@@ -256,7 +284,9 @@ export default function BooksListPage() {
 
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex gap-2 align-items-center">
-          <span className="text-muted small">Page {page} of {totalPages}</span>
+          <span className="text-muted small">
+            Page {page} of {totalPages}
+          </span>
           <Button
             size="sm"
             variant="outline-secondary"
@@ -299,7 +329,8 @@ export default function BooksListPage() {
           <Modal.Title>Delete book</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to delete <strong>{deleteTarget?.title}</strong>?
+          Are you sure you want to delete <strong>{deleteTarget?.title}</strong>
+          ?
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setDeleteTarget(null)}>
@@ -313,4 +344,3 @@ export default function BooksListPage() {
     </>
   );
 }
-

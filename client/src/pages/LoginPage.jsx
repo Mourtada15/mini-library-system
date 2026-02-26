@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
-import { Button, Card } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '../api/client';
-import { useAuth } from '../context/AuthContext';
+import React, { useEffect } from "react";
+import { Button, Card } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../api/client";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
@@ -10,7 +10,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      navigate('/books', { replace: true });
+      navigate("/books", { replace: true });
     }
   }, [loading, user, navigate]);
 
@@ -22,10 +22,7 @@ export default function LoginPage() {
           <Card.Text className="text-muted">
             Use Google SSO to sign in.
           </Card.Text>
-          <Button
-            variant="primary"
-            href={`${API_BASE_URL}/api/auth/google`}
-          >
+          <Button variant="primary" href={`${API_BASE_URL}/api/auth/google`}>
             Sign in with Google
           </Button>
         </Card.Body>
@@ -33,4 +30,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

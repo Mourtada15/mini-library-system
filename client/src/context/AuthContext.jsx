@@ -1,5 +1,11 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import api from '../api/client';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import api from "../api/client";
 
 const AuthContext = createContext(null);
 
@@ -12,7 +18,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.get('/api/auth/me');
+      const res = await api.get("/api/auth/me");
       setUser(res.data);
     } catch (e) {
       setUser(null);
@@ -24,7 +30,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await api.post('/api/auth/logout');
+      await api.post("/api/auth/logout");
     } catch {
       // ignore logout errors; clear client state anyway
     } finally {
@@ -38,7 +44,7 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(
     () => ({ user, loading, error, refreshUser, logout }),
-    [user, loading, error]
+    [user, loading, error],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -47,8 +53,7 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return ctx;
 }
-

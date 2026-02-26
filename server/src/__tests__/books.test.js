@@ -55,7 +55,7 @@ const Book = require('../models/Book');
 
 describe('Books API', () => {
   beforeAll(async () => {
-    // eslint-disable-next-line global-require
+     
     global.__app = require('../server');
   });
 
