@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { API_BASE_URL } from "../api/client";
+import { buildApiUrl } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import "./LoginPage.css";
 
@@ -16,7 +16,7 @@ export default function LoginPage() {
   }, [loading, user, navigate]);
 
   const onGoogleSignIn = () => {
-    window.location.assign(`${API_BASE_URL}/api/auth/google`);
+    window.location.assign(buildApiUrl("/api/auth/google"));
   };
 
   return (

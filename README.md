@@ -67,7 +67,7 @@ Open `http://localhost:5173`.
 - `CLIENT_ORIGIN` (for CORS + auth redirects, e.g. `http://localhost:5173`)
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
-- `GOOGLE_CALLBACK_URL` (e.g. `http://localhost:4000/api/auth/google/callback`)
+- `GOOGLE_CALLBACK_URL` (optional in production same-origin setup; for local dev use `http://localhost:4000/api/auth/google/callback`)
 - `AI_PROVIDER` (`mock`, `openai`, or `anthropic`)
 - `AI_MODEL` (optional; defaults in code to `gpt-4.1-mini`)
 - `OPENAI_API_KEY` (required when using `AI_PROVIDER=openai`)
@@ -91,9 +91,9 @@ ANTHROPIC_API_KEY=
 DEFAULT_LOAN_DAYS=14
 ```
 
-`client/.env` (required by current client code)
+`client/.env` (for local dev)
 
-- `VITE_API_BASE_URL` (e.g. `http://localhost:4000`)
+- `VITE_API_BASE_URL` (e.g. `http://localhost:4000` for local dev; leave unset/empty in production same-origin setup)
 
 Example:
 
@@ -112,7 +112,8 @@ In Google Cloud Console OAuth client:
 
 For production, add your deployed URLs and update:
 - `CLIENT_ORIGIN`
-- `GOOGLE_CALLBACK_URL`
+- Google OAuth redirect URI to `https://your-client-domain/api/auth/google/callback`
+- `GOOGLE_CALLBACK_URL` only if you are not using same-origin `/api` proxying
 
 ### AI provider configuration
 
@@ -133,9 +134,10 @@ If provider calls fail, the AI routes fall back to deterministic mock behavior.
 - **MongoDB**: MongoDB Atlas for `MONGODB_URI`
 - **Server**: Render or Railway
   - Set `CLIENT_ORIGIN` to your client URL
-  - Set `GOOGLE_CALLBACK_URL` to `https://your-server/api/auth/google/callback`
+  - Recommended callback in Google OAuth client: `https://your-client-domain/api/auth/google/callback`
 - **Client**: Vercel
-  - Set `VITE_API_BASE_URL` to your server URL (e.g. `https://your-server.onrender.com`)
+  - Add rewrite for `/api/(.*)` -> your server `https://your-server.onrender.com/api/$1`
+  - Keep `VITE_API_BASE_URL` empty (or unset) so client calls same-origin `/api/...`
 
 ### Notes
 

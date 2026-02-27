@@ -6,10 +6,25 @@ function configurePassport(passport) {
     GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET,
     GOOGLE_CALLBACK_URL,
+    CLIENT_ORIGIN,
   } = process.env;
 
-  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !GOOGLE_CALLBACK_URL) {
-     
+  const normalizedClientOrigin = CLIENT_ORIGIN
+    ? CLIENT_ORIGIN.replace(/\/+$/, '')
+    : '';
+  const productionCallbackURL = normalizedClientOrigin
+    ? `${normalizedClientOrigin}/api/auth/google/callback`
+    : null;
+  const clientOriginIsLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(
+    normalizedClientOrigin
+  );
+  const callbackURL =
+    (!clientOriginIsLocalhost && productionCallbackURL) ||
+    GOOGLE_CALLBACK_URL ||
+    productionCallbackURL ||
+    '/api/auth/google/callback';
+
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
     console.warn('Google OAuth env vars are not fully set. Auth will not work properly.');
   }
 
@@ -18,7 +33,7 @@ function configurePassport(passport) {
       {
         clientID: GOOGLE_CLIENT_ID || 'missing',
         clientSecret: GOOGLE_CLIENT_SECRET || 'missing',
-        callbackURL: GOOGLE_CALLBACK_URL || '/api/auth/google/callback',
+        callbackURL,
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
@@ -79,4 +94,3 @@ function configurePassport(passport) {
 }
 
 module.exports = { configurePassport };
-
