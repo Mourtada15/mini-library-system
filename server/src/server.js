@@ -19,14 +19,33 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
 
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN;
+
+// app.use(
+//   cors({
+//     origin: CLIENT_ORIGIN,
+//     credentials: true,
+//   })
+// );
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_ORIGIN,
+];
 
 app.use(
   cors({
-    origin: CLIENT_ORIGIN,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
+
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(express.json());
