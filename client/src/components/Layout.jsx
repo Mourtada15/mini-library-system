@@ -9,7 +9,8 @@ export default function Layout() {
 
   const onLogout = async () => {
     await logout();
-    navigate("/login");
+    navigate("/login", { replace: true });
+    window.location.reload();
   };
 
   return (

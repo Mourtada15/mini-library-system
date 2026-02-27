@@ -19,7 +19,7 @@
 | **LIBRARIAN** | manage books, checkout/checkin, override |
 | **MEMBER** | view/search books, checkout for self (no override), use smart search |
 
-### Local setup
+### How to run (brief)
 
 Node.js requirement: `^20.19.0 || ^22.13.0 || >=24.0.0` (project default in `.nvmrc` is `20.19.0`).
 
@@ -35,12 +35,9 @@ cd server && npm install
 cd ../client && npm install
 ```
 
-2) Create env files:
+2) Create env files: `server/.env` and `client/.env` (values listed below).
 
-- Copy `server/.env.example` to `server/.env` and fill values.
-- Copy `client/.env.example` to `client/.env` (optional if using default `http://localhost:4000`).
-
-3) Seed the database (creates sample users + 15 books):
+3) (Optional) Seed the database (creates sample users + 15 books and resets existing users/books):
 
 ```bash
 npm run seed
@@ -56,6 +53,52 @@ npm run dev
 
 ```bash
 npm test
+```
+
+Open `http://localhost:5173`.
+
+### Environment variables
+
+`server/.env` (required)
+
+- `PORT` (default fallback in code: `4000`)
+- `MONGODB_URI` (required by the server startup and seed script)
+- `SESSION_SECRET` (recommended)
+- `CLIENT_ORIGIN` (for CORS + auth redirects, e.g. `http://localhost:5173`)
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `GOOGLE_CALLBACK_URL` (e.g. `http://localhost:4000/api/auth/google/callback`)
+- `AI_PROVIDER` (`mock`, `openai`, or `anthropic`)
+- `AI_MODEL` (optional; defaults in code to `gpt-4.1-mini`)
+- `OPENAI_API_KEY` (required when using `AI_PROVIDER=openai`)
+- `ANTHROPIC_API_KEY` (required when using `AI_PROVIDER=anthropic`)
+- `DEFAULT_LOAN_DAYS` (optional; defaults to `14`)
+
+Example:
+
+```dotenv
+PORT=4000
+MONGODB_URI=mongodb://127.0.0.1:27017/mini_library
+SESSION_SECRET=change_me
+CLIENT_ORIGIN=http://localhost:5173
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:4000/api/auth/google/callback
+AI_PROVIDER=mock
+AI_MODEL=gpt-4.1-mini
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+DEFAULT_LOAN_DAYS=14
+```
+
+`client/.env` (required by current client code)
+
+- `VITE_API_BASE_URL` (e.g. `http://localhost:4000`)
+
+Example:
+
+```dotenv
+VITE_API_BASE_URL=http://localhost:4000
 ```
 
 ### Google OAuth configuration
@@ -75,14 +118,15 @@ For production, add your deployed URLs and update:
 
 Set in `server/.env`:
 
-- `AI_PROVIDER=mock` (default) or `AI_PROVIDER=openai` / `AI_PROVIDER=anthropic`
+- `AI_PROVIDER=mock` (recommended for local) or `AI_PROVIDER=openai` / `AI_PROVIDER=anthropic`
 - `AI_MODEL=...`
 - `OPENAI_API_KEY=...` (if OpenAI)
 - `ANTHROPIC_API_KEY=...` (if Anthropic)
 
 AI endpoints are rate-limited (10 requests/min per user).
 
-Mock mode is enabled by default so AI endpoints work without real keys; switch to OpenAI or Anthropic by changing `AI_PROVIDER` and setting the corresponding API key env vars.
+Code default is `openai`. For local/dev without external API calls, set `AI_PROVIDER=mock`.
+If provider calls fail, the AI routes fall back to deterministic mock behavior.
 
 ### Deployment (suggested)
 
