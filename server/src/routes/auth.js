@@ -3,7 +3,7 @@ const passport = require('passport');
 
 const router = express.Router();
 
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+const clientOrigin = process.env.CLIENT_ORIGIN;
 
 router.get(
   '/google',
@@ -15,11 +15,14 @@ router.get(
 router.get(
   '/google/callback',
   passport.authenticate('google', {
-    failureRedirect: `${CLIENT_ORIGIN}/login`,
+    failureRedirect: clientOrigin ? `${clientOrigin}/login` : '/login',
     session: true,
   }),
   (req, res) => {
-    res.redirect(`${CLIENT_ORIGIN}/books`);
+    if (!process.env.CLIENT_ORIGIN) {
+      return res.redirect('/books');
+    }
+    return res.redirect(`${process.env.CLIENT_ORIGIN}/books`);
   }
 );
 
@@ -43,4 +46,3 @@ router.get('/me', (req, res) => {
 });
 
 module.exports = router;
-
