@@ -12,8 +12,7 @@ import AdminUsersPage from "./pages/AdminUsersPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 function DefaultRedirect() {
-  const { user, loading } = useAuth();
-  if (loading) return null;
+  const { user } = useAuth();
   return <Navigate to={user ? "/books" : "/login"} replace />;
 }
 

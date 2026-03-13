@@ -6,14 +6,14 @@ import { useAuth } from "../context/AuthContext";
 import "./LoginPage.css";
 
 export default function LoginPage() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && user) {
+    if (user) {
       navigate("/books", { replace: true });
     }
-  }, [loading, user, navigate]);
+  }, [user, navigate]);
 
   const onGoogleSignIn = () => {
     window.location.assign(buildApiUrl("/api/auth/google"));
@@ -47,7 +47,6 @@ export default function LoginPage() {
             type="button"
             className="library-google-btn"
             onClick={onGoogleSignIn}
-            disabled={loading}
           >
             <svg
               aria-hidden="true"
@@ -71,7 +70,7 @@ export default function LoginPage() {
                 d="M21.8 12.3c0-.6-.1-1.1-.2-1.5H12v3.9h5.4c-.3 1.4-1.1 2.5-2.1 3.1l2.7 2.2c1.6-1.5 3-3.9 3-7.7z"
               />
             </svg>
-            <span>{loading ? "Checking session..." : "Continue with Google"}</span>
+            <span>Continue with Google</span>
           </Button>
 
           <p className="library-login__trust">

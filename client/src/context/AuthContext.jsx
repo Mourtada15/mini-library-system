@@ -11,11 +11,14 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [initializing, setInitializing] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const refreshUser = async () => {
-    setLoading(true);
+  const refreshUser = async ({ silent = false } = {}) => {
+    if (!silent) {
+      setLoading(true);
+    }
     setError(null);
     try {
       const res = await api.get("/api/auth/me");
@@ -24,7 +27,10 @@ export function AuthProvider({ children }) {
       setUser(null);
       setError(e?.response?.data?.message || e.message);
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
+      setInitializing(false);
     }
   };
 
@@ -39,12 +45,12 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    refreshUser();
+    refreshUser({ silent: true });
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, error, refreshUser, logout }),
-    [user, loading, error],
+    () => ({ user, initializing, loading, error, refreshUser, logout }),
+    [user, initializing, loading, error],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

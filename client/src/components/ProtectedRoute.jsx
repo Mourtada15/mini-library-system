@@ -4,9 +4,9 @@ import { Alert, Spinner } from "react-bootstrap";
 import { useAuth } from "../context/AuthContext";
 
 export default function ProtectedRoute({ roles }) {
-  const { user, loading } = useAuth();
+  const { user, initializing } = useAuth();
 
-  if (loading) {
+  if (initializing) {
     return (
       <div className="d-flex justify-content-center py-5">
         <Spinner animation="border" role="status" />
