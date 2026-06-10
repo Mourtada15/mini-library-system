@@ -1,30 +1,26 @@
 const express = require('express');
 const passport = require('passport');
+const {
+  resolveClientUrl,
+  resolveOAuthCallbackUrl,
+} = require('../auth/origin');
 
 const router = express.Router();
 
-const clientOrigin = process.env.CLIENT_ORIGIN;
-
-router.get(
-  '/google',
+router.get('/google', (req, res, next) => {
   passport.authenticate('google', {
     scope: ['profile', 'email'],
-  })
-);
+    callbackURL: resolveOAuthCallbackUrl(req),
+  })(req, res, next);
+});
 
-router.get(
-  '/google/callback',
+router.get('/google/callback', (req, res, next) => {
   passport.authenticate('google', {
-    failureRedirect: clientOrigin ? `${clientOrigin}/login` : '/login',
+    callbackURL: resolveOAuthCallbackUrl(req),
+    failureRedirect: resolveClientUrl(req, '/login'),
     session: true,
-  }),
-  (req, res) => {
-    if (!process.env.CLIENT_ORIGIN) {
-      return res.redirect('/books');
-    }
-    return res.redirect(`${process.env.CLIENT_ORIGIN}/books`);
-  }
-);
+  })(req, res, next);
+}, (req, res) => res.redirect(resolveClientUrl(req, '/books')));
 
 router.post('/logout', (req, res, next) => {
   req.logout((err) => {
