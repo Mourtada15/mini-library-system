@@ -13,7 +13,7 @@ function safeJsonParse(text, fallback) {
     const parsed = JSON.parse(text);
     if (!parsed || typeof parsed !== 'object') return fallback;
     return parsed;
-  } catch (e) {
+  } catch {
     return fallback;
   }
 }
@@ -41,7 +41,7 @@ router.post('/smart-search', requireAuth, async (req, res, next) => {
       provider = result.provider;
       model = result.model;
       providerUsed = provider;
-    } catch (err) {
+    } catch {
       // Fallback to mock behavior
       const payload = generateMockSmartSearch(prompt);
       text = JSON.stringify(payload);
@@ -160,7 +160,7 @@ router.post(
         provider = result.provider;
         model = result.model;
         providerUsed = provider;
-      } catch (err) {
+      } catch {
         const payload = generateMockEnrichBook(book);
         text = JSON.stringify(payload);
         provider = 'mock';
@@ -199,4 +199,3 @@ router.post(
 );
 
 module.exports = router;
-

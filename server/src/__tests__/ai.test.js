@@ -24,8 +24,6 @@ jest.mock('../models/Book', () => {
   };
 });
 
-const Book = require('../models/Book');
-
 describe('AI routes', () => {
   beforeAll(async () => {
      
@@ -47,4 +45,3 @@ describe('AI routes', () => {
     expect(res.body.explanation).toBeDefined();
   });
 });
-
