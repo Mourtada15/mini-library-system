@@ -37,19 +37,13 @@ cd ../client && npm install
 
 2) Create env files: `server/.env` and `client/.env` (values listed below).
 
-3) (Optional) Seed the database (creates sample users + 15 books and resets existing users/books):
-
-```bash
-npm run seed
-```
-
-4) Run locally (client + server):
+3) Run locally (client + server):
 
 ```bash
 npm run dev
 ```
 
-5) Run backend tests:
+4) Run backend tests:
 
 ```bash
 npm test
@@ -62,7 +56,7 @@ Open `http://localhost:5173`.
 `server/.env` (required)
 
 - `PORT` (default fallback in code: `4000`)
-- `MONGODB_URI` (required by the server startup and seed script)
+- `MONGODB_URI` (required by the server startup)
 - `SESSION_SECRET` (recommended)
 - `CLIENT_ORIGIN` (for CORS + auth redirects, e.g. `http://localhost:5173`)
 - `GOOGLE_CLIENT_ID`
